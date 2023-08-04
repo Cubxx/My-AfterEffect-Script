@@ -1,0 +1,610 @@
+(function (that) {
+    if (typeof JSON !== "object") {
+        JSON = {};
+    }
+    (function () {
+        "use strict";
+        var rx_one = /^[\],:{}\s]*$/;
+        var rx_two = /\\(?:["\\\/bfnrt]|u[0-9a-fA-F]{4})/g;
+        var rx_three = /"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g;
+        var rx_four = /(?:^|:|,)(?:\s*\[)+/g;
+        var rx_escapable = /[\\"\u0000-\u001f\u007f-\u009f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g;
+        var rx_dangerous = /[\u0000\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g;
+        function f(n) { return (n < 10) ? "0" + n : n; }
+        function this_value() { return this.valueOf(); }
+        if (typeof Date.prototype.toJSON !== "function") {
+            Date.prototype.toJSON = function () { return isFinite(this.valueOf()) ? (this.getUTCFullYear() + "-" + f(this.getUTCMonth() + 1) + "-" + f(this.getUTCDate()) + "T" + f(this.getUTCHours()) + ":" + f(this.getUTCMinutes()) + ":" + f(this.getUTCSeconds()) + "Z") : null; };
+            Boolean.prototype.toJSON = this_value;
+            Number.prototype.toJSON = this_value;
+            String.prototype.toJSON = this_value;
+        }
+        var gap;
+        var indent;
+        var meta;
+        var rep;
+        function quote(string) { rx_escapable.lastIndex = 0; return rx_escapable.test(string) ? "\"" + string.replace(rx_escapable, function (a) { var c = meta[a]; return typeof c === "string" ? c : "\\u" + ("0000" + a.charCodeAt(0).toString(16)).slice(-4); }) + "\"" : "\"" + string + "\""; }
+        function str(key, holder) { var i; var k; var v; var length; var mind = gap; var partial; var value = holder[key]; if (value && typeof value === "object" && typeof value.toJSON === "function") {
+            value = value.toJSON(key);
+        } if (typeof rep === "function") {
+            value = rep.call(holder, key, value);
+        } switch (typeof value) {
+            case "string": return quote(value);
+            case "number": return (isFinite(value)) ? String(value) : "null";
+            case "boolean":
+            case "null": return String(value);
+            case "object":
+                if (!value) {
+                    return "null";
+                }
+                gap += indent;
+                partial = [];
+                if (Object.prototype.toString.apply(value) === "[object Array]") {
+                    length = value.length;
+                    for (i = 0; i < length; i += 1) {
+                        partial[i] = str(i, value) || "null";
+                    }
+                    v = partial.length === 0 ? "[]" : gap ? ("[\n" + gap + partial.join(",\n" + gap) + "\n" + mind + "]") : "[" + partial.join(",") + "]";
+                    gap = mind;
+                    return v;
+                }
+                if (rep && typeof rep === "object") {
+                    length = rep.length;
+                    for (i = 0; i < length; i += 1) {
+                        if (typeof rep[i] === "string") {
+                            k = rep[i];
+                            v = str(k, value);
+                            if (v) {
+                                partial.push(quote(k) + ((gap) ? ": " : ":") + v);
+                            }
+                        }
+                    }
+                }
+                else {
+                    for (k in value) {
+                        if (Object.prototype.hasOwnProperty.call(value, k)) {
+                            v = str(k, value);
+                            if (v) {
+                                partial.push(quote(k) + ((gap) ? ": " : ":") + v);
+                            }
+                        }
+                    }
+                }
+                v = partial.length === 0 ? "{}" : gap ? "{\n" + gap + partial.join(",\n" + gap) + "\n" + mind + "}" : "{" + partial.join(",") + "}";
+                gap = mind;
+                return v;
+        } }
+        if (typeof JSON.stringify !== "function") {
+            meta = { "\b": "\\b", "\t": "\\t", "\n": "\\n", "\f": "\\f", "\r": "\\r", "\"": "\\\"", "\\": "\\\\" };
+            JSON.stringify = function (value, replacer, space) { var i; gap = ""; indent = ""; if (typeof space === "number") {
+                for (i = 0; i < space; i += 1) {
+                    indent += " ";
+                }
+            }
+            else if (typeof space === "string") {
+                indent = space;
+            } rep = replacer; if (replacer && typeof replacer !== "function" && (typeof replacer !== "object" || typeof replacer.length !== "number")) {
+                throw new Error("JSON.stringify");
+            } return str("", { "": value }); };
+        }
+        if (typeof JSON.parse !== "function") {
+            JSON.parse = function (text, reviver) { var j; function walk(holder, key) { var k; var v; var value = holder[key]; if (value && typeof value === "object") {
+                for (k in value) {
+                    if (Object.prototype.hasOwnProperty.call(value, k)) {
+                        v = walk(value, k);
+                        if (v !== undefined) {
+                            value[k] = v;
+                        }
+                        else {
+                            delete value[k];
+                        }
+                    }
+                }
+            } return reviver.call(holder, key, value); } text = String(text); rx_dangerous.lastIndex = 0; if (rx_dangerous.test(text)) {
+                text = text.replace(rx_dangerous, function (a) { return ("\\u" + ("0000" + a.charCodeAt(0).toString(16)).slice(-4)); });
+            } if (rx_one.test(text.replace(rx_two, "@").replace(rx_three, "]").replace(rx_four, ""))) {
+                j = eval("(" + text + ")");
+                return (typeof reviver === "function") ? walk({ "": j }, "") : j;
+            } throw new SyntaxError("JSON.parse"); };
+        }
+    }());
+    var KeyframeData = (function () {
+        function KeyframeData(property) {
+            this.InInterpolationType = KeyframeInterpolationType.LINEAR;
+            this.OutInterpolationType = KeyframeInterpolationType.LINEAR;
+            this.InTemporalEase = [new KeyframeEase(0, 0.1)];
+            this.OutTemporalEase = [new KeyframeEase(0, 0.1)];
+            this.TemporalAutoBezier = false;
+            this.TemporalContinuous = false;
+            this.Time = 0;
+            this.Value = {};
+            if (KeyframeData.isSpatial(property)) {
+                this.SpatialAutoBezier = false;
+                this.SpatialContinuous = false;
+                this.InSpatialTangent = [0, 0];
+                this.OutSpatialTangent = [0, 0];
+                this.Roving = false;
+            }
+        }
+        KeyframeData.isSpatial = function (property) {
+            return !![PropertyValueType.TwoD_SPATIAL, PropertyValueType.ThreeD_SPATIAL].map(function (e) { return e == property.propertyValueType ? e : undefined; }).length;
+        };
+        return KeyframeData;
+    }());
+    var b = {
+        get_active_comp: function () {
+            var comp = app.project.activeItem;
+            if (comp instanceof CompItem) {
+                return comp;
+            }
+            else {
+                abort('请在时间轴上打开合成');
+            }
+        },
+        get_selected_layers: function () {
+            return b.get_active_comp().selectedLayers;
+        },
+        add_layer: function () {
+            return b.get_active_comp().layers.addShape();
+        },
+        import_layer: function (data) {
+            var layer = b.add_layer();
+            l.set_layer(layer, data);
+            return layer;
+        },
+        export_layer: function (layer) {
+            if (layer.parent) {
+                abort('抱歉，暂不支持导出有父级图层的图层');
+            }
+            if (layer instanceof ShapeLayer) { }
+            else {
+                abort('抱歉，目前只支持导出形状层');
+                return;
+            }
+            var propertyNames = [
+                'adjustmentLayer',
+                'autoOrient',
+                'blendingMode',
+                'effectsActive',
+                'frameBlendingType',
+                'guideLayer',
+                'motionBlur',
+                'preserveTransparency',
+                'quality',
+                'samplingQuality',
+                'threeDLayer',
+                'trackMatteType',
+            ];
+            layer.canSetCollapseTransformation && propertyNames.push('collapseTransformation');
+            layer.canSetTimeRemapEnabled && propertyNames.push('timeRemapEnabled');
+            var data = l.get_layer(layer, propertyNames);
+            return JSON.stringify(data).replace(/\[\s+\]/g, '[]').replace(/\{\s+\}/g, '{}');
+        }
+    };
+    var l = {
+        recur_factory: function (mode, _a) {
+            var _b = _a.GroupFn, GroupFn = _b === void 0 ? function (p, d) { return true; } : _b, _c = _a.PropertyFn, PropertyFn = _c === void 0 ? function (p, d) { return true; } : _c;
+            var group_fn = mode + '_group', property_fn = mode + '_property';
+            return function recur(p, d) {
+                if (p instanceof PropertyGroup || p instanceof MaskPropertyGroup) {
+                    if (!GroupFn(p, d))
+                        return;
+                    return l[group_fn](p, d, recur);
+                }
+                else if (p instanceof Property) {
+                    if (!PropertyFn(p, d))
+                        return;
+                    switch (p.propertyValueType) {
+                        case PropertyValueType.NO_VALUE: return;
+                        default: return l[property_fn](p, d);
+                    }
+                }
+            };
+        },
+        get_group: function (group, data, recur) {
+            data['@matchName'] = group.matchName;
+            PropertyGroup.prototype.map.call(group, function (property) {
+                data[property.name] = recur(property, {});
+            }, true);
+            return data;
+        },
+        set_group: function (group, data, recur) {
+            data.map(function (sub_data, key) {
+                if (key[0] == '@') {
+                    return;
+                }
+                if (typeof sub_data !== 'object') {
+                    group[key] = sub_data;
+                    return;
+                }
+                var property;
+                var matchName = sub_data['@matchName'], name = key;
+                if (matchName) {
+                    if (group.canAddProperty(matchName)) {
+                        property = group.addProperty(matchName);
+                        if (group.propertyType == PropertyType.INDEXED_GROUP) {
+                            property.name = name;
+                        }
+                    }
+                    else {
+                        property = group.property(name);
+                    }
+                }
+                else if (name) {
+                    property = group.property(name);
+                }
+                else {
+                    abort('属性创建/获取失败:' + name);
+                }
+                recur(property, sub_data);
+            });
+            return group;
+        },
+        get_property: function (property, data) {
+            if (data === void 0) { data = {}; }
+            if (!property.canVaryOverTime) {
+                get('value');
+                return;
+            }
+            if (property.canSetExpression && property.expression) {
+                get('expression');
+                get('expressionEnabled');
+            }
+            if (property.numKeys) {
+                var keys = Array(property.numKeys);
+                keys.map(function (e, i, arr) {
+                    var obj = arr[i] = new KeyframeData(property);
+                    obj.map(function (value, key, obj) {
+                        obj[key] = property["key".concat(key)](i + 1);
+                    });
+                });
+                get('keys', keys);
+            }
+            if (!data['expression'] && !data['keys']) {
+                get('value');
+            }
+            return data;
+            function get(key, value) {
+                var _a;
+                c.set_property_data(key, (_a = property[key]) !== null && _a !== void 0 ? _a : value, data);
+            }
+        },
+        set_property: function (property, data) {
+            var _a = convert(data), value = _a.value, expression = _a.expression, expressionEnabled = _a.expressionEnabled, keys = _a.keys;
+            if (value) {
+                property.setValue(value);
+            }
+            if (expression) {
+                property.expression = expression;
+                property.expressionEnabled = expressionEnabled;
+            }
+            if (keys) {
+                keys.map(function (_a) {
+                    var Time = _a.Time, Value = _a.Value;
+                    property.setValueAtTime(Time, Value);
+                }, true);
+                var isSpatial_1 = KeyframeData.isSpatial(property);
+                keys.map(function (_a, i) {
+                    var InInterpolationType = _a.InInterpolationType, OutInterpolationType = _a.OutInterpolationType, InTemporalEase = _a.InTemporalEase, OutTemporalEase = _a.OutTemporalEase, TemporalAutoBezier = _a.TemporalAutoBezier, TemporalContinuous = _a.TemporalContinuous, Time = _a.Time, Value = _a.Value, SpatialAutoBezier = _a.SpatialAutoBezier, SpatialContinuous = _a.SpatialContinuous, InSpatialTangent = _a.InSpatialTangent, OutSpatialTangent = _a.OutSpatialTangent, Roving = _a.Roving;
+                    property.setInterpolationTypeAtKey(i + 1, InInterpolationType, OutInterpolationType);
+                    property.setTemporalEaseAtKey(i + 1, InTemporalEase, OutTemporalEase);
+                    property.setTemporalAutoBezierAtKey(i + 1, TemporalAutoBezier);
+                    property.setTemporalContinuousAtKey(i + 1, TemporalContinuous);
+                    if (isSpatial_1) {
+                        property.setSpatialTangentsAtKey(i + 1, InSpatialTangent, OutSpatialTangent);
+                        property.setSpatialAutoBezierAtKey(i + 1, SpatialAutoBezier);
+                        property.setSpatialContinuousAtKey(i + 1, SpatialContinuous);
+                        property.setRovingAtKey(i + 1, Roving);
+                    }
+                }, true);
+            }
+            return property;
+            function convert(data) {
+                return data.map(function (value, key) {
+                    return c.get_property_data(key, data);
+                }, {});
+            }
+        },
+        get_layer: function (layer, propertyNames) {
+            if (propertyNames === void 0) { propertyNames = ['']; }
+            var data = {};
+            [
+                'name',
+                'comment',
+                'startTime',
+                'inPoint',
+                'outPoint',
+                'label',
+                'locked',
+                'shy ',
+                'solo',
+                'stretch',
+                'outPoint',
+            ].concat(propertyNames).map(function (key) {
+                data[key] = layer[key];
+            }, true);
+            l.get_group(layer, data, l.recur_factory('get', {
+                GroupFn: function (p, d) {
+                    switch (p.parentProperty.matchName) {
+                        case 'ADBE Root Vectors Group': return fn();
+                        case 'ADBE Mask Parade': {
+                            [
+                                'color',
+                                'inverted',
+                                'locked',
+                                'maskFeatherFalloff',
+                                'maskMode',
+                                'maskMotionBlur',
+                                'rotoBezier'
+                            ].map(function (key) {
+                                d[key] = p[key];
+                            }, true);
+                            return true;
+                        }
+                        case 'ADBE Effect Parade': {
+                            if (p.name != 'Compositing Options') {
+                                return true;
+                            }
+                            else {
+                                return false;
+                            }
+                        }
+                        case 'ADBE Transform Group': return fn();
+                        default: return fn();
+                    }
+                    function fn() {
+                        if (p.isModified) {
+                            return true;
+                        }
+                    }
+                },
+                PropertyFn: function (p, d) {
+                    if (p.isModified) {
+                        return true;
+                    }
+                }
+            }));
+            return data;
+        },
+        set_layer: function (layer, data) {
+            return l.set_group(layer, data, l.recur_factory('set', {}));
+        }
+    };
+    var c = {
+        _any2obj: {
+            'object[]': function (v) {
+                v.map(function (e, i, arr) {
+                    c.set_property_data(i + '', arr[i], arr);
+                });
+                return v;
+            },
+            'MarkerValue': function (v) { return v; },
+            'Shape': function (v) { return v; },
+            'TextDocument': function (v) { return v; },
+            'KeyframeEase': function (v) { return v; },
+            'KeyframeData': function (v) {
+                v.map(function (value, key, obj) {
+                    c.set_property_data(key, obj[key], obj);
+                });
+                return v;
+            }
+        },
+        _obj2any: {
+            'object[]': function (v) {
+                return v.map(function (e, i, arr) {
+                    return c.get_property_data(i + '', arr);
+                });
+            },
+            'MarkerValue': function (v) { return new MarkerValue(''); },
+            'Shape': function (v) {
+                return v.map(function (value) { return value; }, new Shape());
+            },
+            'TextDocument': function (v) { return new TextDocument(''); },
+            'KeyframeEase': function (v) {
+                var _a = v, speed = _a.speed, influence = _a.influence;
+                return new KeyframeEase(speed, influence < 0.1 ? 0.1 : influence);
+            },
+            'KeyframeData': function (v) {
+                return v.map(function (value, key, obj) {
+                    return c.get_property_data(key, obj);
+                });
+            }
+        },
+        type: function (value) {
+            var type = value.constructor.name;
+            switch (type) {
+                case 'MarkerValue': return type;
+                case 'Shape': return type;
+                case 'TextDocument': return type;
+                case 'KeyframeEase': return type;
+                case 'KeyframeData': return type;
+            }
+            if (value instanceof Array) {
+                if (value.length == 0) {
+                    return;
+                }
+                else if (value.map(function (e) { return typeof e === 'object' ? e : undefined; }).length == value.length) {
+                    return 'object[]';
+                }
+            }
+        },
+        set_property_data: function (key, value, data) {
+            var type = c.type(value);
+            if (type) {
+                data[key] = c._any2obj[type](value);
+                data[key]['@type'] = type;
+            }
+            else {
+                data[key] = value;
+            }
+        },
+        get_property_data: function (key, data) {
+            var value = data[key];
+            var type = value['@type'];
+            if (type) {
+                delete value['@type'];
+                return c._obj2any[type](value);
+            }
+            else if (c.type(value) == 'object[]') {
+                return c._obj2any['object[]'](value);
+            }
+            return value;
+        }
+    };
+    var f = {
+        read: function (file) {
+            File.isEncodingAvailable('utf-8') || abort('读取文件失败: 系统不支持utf-8');
+            file.encoding = 'utf-8';
+            file.open('r');
+            var text = file.read();
+            file.close();
+            return text;
+        },
+        write: function (file, text) {
+            File.isEncodingAvailable('utf-8') || abort('写入文件失败: 系统不支持utf-8');
+            file.encoding = 'utf-8';
+            file.open('w');
+            file.write(text);
+            file.close();
+        },
+        open: function (path) {
+            var file = path ? new File(path) : File.openDialog();
+            if (!file)
+                return;
+            return f.read(file);
+        },
+        save: function (path, text) {
+            var file = path ? new File(path) : File.saveDialog();
+            if (!file)
+                return;
+            f.write(file, text);
+        },
+        muti_open: function (path) {
+            var folder = new Folder(path);
+            var files = folder.exists
+                ? folder.getFiles().map(function (f) { return f instanceof File ? f : undefined; })
+                : File.openDialog(undefined, undefined, true);
+            if (!files)
+                return;
+            var datas = {};
+            files.map(function (file) {
+                datas[File.decode(file.name)] = f.read(file);
+            });
+            return datas;
+        },
+        muti_save: function (path, datas) {
+            var folder = path
+                ? new Folder(path)
+                : new Folder(app.project.file.fsName).selectDlg();
+            if (!folder)
+                return;
+            if (folder.exists || folder.create()) {
+                datas.map(function (text, name) {
+                    f.save("".concat(folder.fsName, "/").concat(name), text);
+                });
+            }
+            else {
+                abort('文件夹创建失败' + path);
+            }
+        }
+    };
+    var h = {
+        getLayersPath: function () {
+            return app.project.file
+                ? app.project.file.fsName.replace(/\\[^\\]+$/, '/layers')
+                : abort('请先打开项目');
+        },
+        set_undo_group: function (fn, fn_name) {
+            return function () {
+                app.beginUndoGroup("ShapeLayerSaver.".concat(fn_name));
+                fn.call(b);
+                app.endUndoGroup();
+            };
+        }
+    };
+    var u = {
+        show: function (win) {
+            win.layout.layout(true);
+            win.layout.resize();
+            if (win instanceof Window) {
+                win.show();
+            }
+        },
+        palette: function () {
+            var win = (that instanceof Panel) ? that : new Window("palette", undefined, undefined, { resizeable: true });
+            win.orientation = "column";
+            win.alignChildren = "left";
+            win.margins = 0;
+            win.spacing = 5;
+            return win;
+        },
+        button: function (node, text, onClick) {
+            if (text === void 0) { text = ''; }
+            if (onClick === void 0) { onClick = function () { }; }
+            var button = node.add("button");
+            button.text = text;
+            button.onClick = h.set_undo_group(onClick, text);
+            return button;
+        },
+        listbox: function (node, text, onDoubleClick) {
+            if (text === void 0) { text = ''; }
+            if (onDoubleClick === void 0) { onDoubleClick = function () { }; }
+            var box = node.add("listbox");
+            box.helpTip = onDoubleClick._name || '';
+            box.onDoubleClick = h.set_undo_group(onDoubleClick, text);
+            return box;
+        }
+    };
+    var a = {
+        import_layers: function (path) {
+            var datas = f.muti_open(path);
+            if (!datas)
+                return;
+            datas.map(function (value) {
+                b.import_layer(JSON.parse(value));
+            });
+        },
+        export_layers: function (path) {
+            var layers = b.get_selected_layers();
+            layers.checkLength('请先选择图层');
+            var datas = {};
+            layers.map(function (layer) {
+                datas[layer.name + '.json'] = b.export_layer(layer);
+            });
+            f.muti_save(path, datas);
+        },
+        UI: function () {
+            var datas = {};
+            var win = u.palette();
+            u.button(win, 'import_layers', function () {
+                var path = h.getLayersPath();
+                if (new Folder(path).exists) {
+                    listBox.removeAll();
+                    datas = f.muti_open(path);
+                    datas.map(function (value, key) {
+                        if (/\.json$/.test(key)) {
+                            listBox.add("item", key);
+                        }
+                    });
+                }
+                else {
+                    a.import_layers();
+                }
+            });
+            u.button(win, 'export_layers', function () {
+                var path = h.getLayersPath();
+                a.export_layers(path);
+                alert("\u5DF2\u5BFC\u51FA\u81F3\n".concat(path));
+            });
+            var listBox = u.listbox(win, 'import_layer', function () {
+                b.import_layer(JSON.parse(datas[listBox.selection.text]));
+            });
+            win.onResizing = win.onResize = function () {
+                this.layout.resize();
+                listBox.size[0] = win.size[0];
+                listBox.size[1] = win.size[1] - 100;
+            };
+            u.show(win);
+        }
+    };
+    return typeof ShapeLayerSaver === "undefined" ? (ShapeLayerSaver = a) : a;
+})(this).UI();
