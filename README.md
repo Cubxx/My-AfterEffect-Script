@@ -1,21 +1,29 @@
 - [脚本依赖包](#脚本依赖包)
-  - [cubx-package.js](#cubx-packagejs)
 - [脚本列表](#脚本列表)
+  - [Toolbox.jsx](#toolboxjsx)
   - [Shape Layer Saver.jsx](#shape-layer-saverjsx)
 ***
 
 # 脚本依赖包
-**使用脚本前需要先安装以下所有文件**
-
 如无特殊说明，包/库/模块文件都应放到`.\Support Files\Scripts\Startup`
 
-## cubx-package.js
+**使用脚本前需要先安装以下文件**
+- [cubx-package.jsx](./cubx-package.jsx)
 
 # 脚本列表
-
 如无特殊说明，脚本都应放到`.\Support Files\Scripts\ScriptUI Panels`
 
-## Shape Layer Saver.jsx
+
+## [Toolbox.jsx](./Toolbox.jsx)
+*需要事先安装的模块*
+- [Shape Layer Saver.jsx](./Shape%20Layer%20Saver.jsx)
+
+私的个人工具箱
+
+
+## [Shape Layer Saver.jsx](./Shape%20Layer%20Saver.jsx)
+*需要事先安装的模块*
+- [json2.jsx](./json2.jsx)
 
 用于形状层存储
 
@@ -29,8 +37,8 @@
 >
 > 每个图层对应一个json文件。如果图层名重复，只会导出最后一个图层
 
-> 放至`Startup`文件夹可作为模块使用，通过全局变量`ShapeLayerSaver`调用模块
->
+**作为模块**: 放至`Startup`文件夹，通过全局变量`ShapeLayerSaver`调用模块
+
 > 作为模块使用前，需要删除jsx文件末的UI方法调用
 >
 > ``` typescript
