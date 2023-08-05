@@ -65,6 +65,7 @@
             var layer = b.add_layer();
             layer.name = 'Null';
             layer.label = 1;
+            layer.transform.scale.expression = '[100, 100]';
             layer.transform.opacity.setValue(0);
             var contents = layer.property('ADBE Root Vectors Group').is(PropertyGroup);
             contents.addProperty('ADBE Vector Shape - Rect');
