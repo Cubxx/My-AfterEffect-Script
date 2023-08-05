@@ -18,7 +18,7 @@
             }
         }
         KeyframeData.isSpatial = function (property) {
-            return !![PropertyValueType.TwoD_SPATIAL, PropertyValueType.ThreeD_SPATIAL].map(function (e) { return e == property.propertyValueType ? e : undefined; }).length;
+            return !![PropertyValueType.TwoD_SPATIAL, PropertyValueType.ThreeD_SPATIAL].filter(function (e) { return e == property.propertyValueType; }).length;
         };
         return KeyframeData;
     }());
@@ -314,7 +314,7 @@
                 if (value.length == 0) {
                     return;
                 }
-                else if (value.map(function (e) { return typeof e === 'object' ? e : undefined; }).length == value.length) {
+                else if (value.filter(function (e) { return typeof e === 'object'; }).length == value.length) {
                     return 'object[]';
                 }
             }
@@ -373,7 +373,7 @@
         multi_open: function (path) {
             var folder = new Folder(path);
             var files = folder.exists
-                ? folder.getFiles().map(function (f) { return f instanceof File ? f : undefined; })
+                ? folder.getFiles().filter(function (f) { return f instanceof File; })
                 : File.openDialog(undefined, undefined, true);
             if (!files)
                 return;

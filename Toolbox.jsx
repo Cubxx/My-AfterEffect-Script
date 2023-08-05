@@ -27,11 +27,7 @@
             }
         },
         get_selected_comps: function () {
-            var comps = app.project.selection.map(function (e) {
-                if (e instanceof CompItem) {
-                    return e;
-                }
-            });
+            var comps = app.project.selection.filter(function (e) { return e instanceof CompItem; });
             comps.checkLength('请在项目面板中选择合成');
             return comps;
         },
@@ -86,21 +82,14 @@
                 if (i + 1 != group.propertyIndex) {
                     return e;
                 }
-            }).removeAll();
+            }).filter(function (e) { return !!e; }).removeAll();
             return new_layer;
         },
         add_layers_from_selected_groups: function () {
             var properties = b.get_selected_properties();
-            var groups = properties.map(function (e) {
-                if (e instanceof PropertyGroup && !(e instanceof MaskPropertyGroup)) {
-                    return e;
-                }
-            });
+            var groups = properties.filter(function (e) { return e instanceof PropertyGroup && !(e instanceof MaskPropertyGroup); });
             groups.checkLength('请选择属性组(除蒙版以外)');
-            groups.map(function (e) {
-                b.add_layer_from_group(e);
-                return e;
-            }).removeAll();
+            groups.map(function (e) { return (b.add_layer_from_group(e), e); }).removeAll();
         },
         unpack_comp: function (comp_layer) {
             comp_layer.selected = true;
@@ -114,17 +103,12 @@
         },
         unpack_selected_comps: function () {
             var layers = b.get_selected_layers();
-            var comp_layers = layers.map(function (layer) {
+            var comp_layers = layers.filter(function (layer) {
                 layer.selected = false;
-                if (layer instanceof AVLayer && layer.source instanceof CompItem) {
-                    return layer;
-                }
+                return layer instanceof AVLayer && layer.source instanceof CompItem;
             });
             comp_layers.checkLength('请选择合成图层');
-            comp_layers.map(function (e, i) {
-                b.unpack_comp(e);
-                return e.source;
-            }).removeAll();
+            comp_layers.map(function (e, i) { return (b.unpack_comp(e), e.source); }).removeAll();
         },
         unpack_layer: function (layer) {
             layer.selected = true;
@@ -140,17 +124,12 @@
         },
         unpack_selected_layers: function () {
             var layers = b.get_selected_layers();
-            var shape_layers = layers.map(function (e) {
+            var shape_layers = layers.filter(function (e) {
                 e.selected = false;
-                if (e instanceof ShapeLayer) {
-                    return e;
-                }
+                return e instanceof ShapeLayer;
             });
             shape_layers.checkLength('请选择形状图层');
-            shape_layers.map(function (e) {
-                b.unpack_layer(e);
-                return e;
-            }).removeAll();
+            shape_layers.map(function (e) { return (b.unpack_layer(e), e); }).removeAll();
         },
         render: function () {
             app.project.renderQueue.showWindow(true);
@@ -279,6 +258,7 @@
             b.set_fns_name();
         },
         test: function () {
+            b.set_undo_group(b.unpack_selected_layers)();
         },
         run: function () {
             a.init();

@@ -27,6 +27,17 @@ function abort(message) {
     Array.prototype.map = function (fn, order) {
         return map_factory(this)(function (arr, i) { return arr[i]; })(fn, order);
     };
+    Array.prototype.filter = function (fn) {
+        var old_array = this;
+        var new_array = [];
+        for (var i = 0; i < old_array.length; i++) {
+            var e = old_array[i];
+            if (fn(e, i, old_array)) {
+                new_array.push(e);
+            }
+        }
+        return new_array;
+    };
     Array.prototype.checkLength = function (message, minLength) {
         if (minLength === void 0) { minLength = 1; }
         if (this.length < minLength) {
@@ -36,7 +47,7 @@ function abort(message) {
     Array.prototype.removeAll = function () {
         var arr = this;
         var obj = {};
-        arr.map(function (e, i) {
+        var group_info_arr = arr.map(function (e, i) {
             if (e instanceof PropertyGroup) {
                 var parentProperty = e.parentProperty, propertyIndex = e.propertyIndex;
                 return { parentProperty: parentProperty, propertyIndex: propertyIndex };
@@ -44,7 +55,8 @@ function abort(message) {
             else {
                 obj[i] = e;
             }
-        }).map(function (_a) {
+        }).filter(function (e) { return !!e; });
+        group_info_arr.map(function (_a) {
             var parentProperty = _a.parentProperty, propertyIndex = _a.propertyIndex;
             parentProperty(propertyIndex).remove();
         });
