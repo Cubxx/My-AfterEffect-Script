@@ -170,7 +170,7 @@
                 }, {});
             }
             var _a = convert(data), value = _a.value, expression = _a.expression, expressionEnabled = _a.expressionEnabled, keys = _a.keys;
-            if (value) {
+            if (value != null) {
                 property.setValue(value);
             }
             if (expression) {
