@@ -401,14 +401,12 @@
     };
     var h = {
         getLayersPath: function () {
-            return app.project.file
-                ? app.project.file.fsName.replace(/\\[^\\]+$/, '/layers')
-                : abort('请先打开项目');
+            return Folder.myDocuments.fsName + '\\ShapeLayerSaver\\layers';
         },
         set_undo_group: function (fn, fn_name) {
             return function () {
                 app.beginUndoGroup("ShapeLayerSaver.".concat(fn_name));
-                fn.call(b);
+                fn();
                 app.endUndoGroup();
             };
         }
@@ -465,31 +463,36 @@
             f.multi_save(path, datas);
         },
         UI: function () {
-            var datas = {};
             var win = u.palette();
-            u.button(win, 'import_layers', function () {
+            u.button(win, '导入', function () {
+                a.import_layers();
+            });
+            u.button(win, '导出', function () {
                 var path = h.getLayersPath();
-                if (new Folder(path).exists) {
-                    listBox.removeAll();
-                    datas = f.multi_open(path);
-                    datas.map(function (value, key) {
+                a.export_layers(path);
+                listBox.updata();
+            });
+            var listBox = u.listbox(win, '图层', function () {
+                b.import_layer(JSON.parse(listBox.data[listBox.selection.text]));
+            });
+            listBox.updata = function () {
+                var that = this;
+                var path = h.getLayersPath();
+                var folder = new Folder(path);
+                if (folder.exists) {
+                    that.removeAll();
+                    that.data = f.multi_open(path);
+                    that.data.map(function (value, key) {
                         if (/\.json$/.test(key)) {
-                            listBox.add("item", key);
+                            that.add("item", key);
                         }
                     });
                 }
                 else {
-                    a.import_layers();
+                    folder.create();
                 }
-            });
-            u.button(win, 'export_layers', function () {
-                var path = h.getLayersPath();
-                a.export_layers(path);
-                alert("\u5DF2\u5BFC\u51FA\u81F3\n".concat(path));
-            });
-            var listBox = u.listbox(win, 'import_layer', function () {
-                b.import_layer(JSON.parse(datas[listBox.selection.text]));
-            });
+            };
+            listBox.updata();
             win.onResizing = win.onResize = function () {
                 this.layout.resize();
                 listBox.size[0] = win.size[0];
