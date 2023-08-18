@@ -5,33 +5,29 @@
 ***
 
 # 脚本依赖包
-如无特殊说明，包/库/模块文件都应放到`.\Support Files\Scripts\Startup`
+如无特殊说明，包/模块文件都应放到`.\Support Files\Scripts\Startup`
 
-**使用脚本前需要先安装以下文件**
-- [cubx-package.jsx](./cubx-package.jsx)
+|                         脚本                         |                        依赖包                        |
+| :--------------------------------------------------: | :--------------------------------------------------: |
+|                       所有脚本                       |        [cubx-package.jsx](./cubx-package.jsx)        |
+|             [Toolbox.jsx](./Toolbox.jsx)             | [Shape Layer Saver.jsx](./Shape%20Layer%20Saver.jsx) |
+| [Shape Layer Saver.jsx](./Shape%20Layer%20Saver.jsx) |               [json2.jsx](./json2.jsx)               |
+
 
 # 脚本列表
 如无特殊说明，脚本都应放到`.\Support Files\Scripts\ScriptUI Panels`
 
 
 ## [Toolbox.jsx](./Toolbox.jsx)
-*需要事先安装的模块*
-- [Shape Layer Saver.jsx](./Shape%20Layer%20Saver.jsx)
-
 私的个人工具箱
 
 
 ## [Shape Layer Saver.jsx](./Shape%20Layer%20Saver.jsx)
-*需要事先安装的模块*
-- [json2.jsx](./json2.jsx)
-
 用于形状层存储
 
-**导入图层**: 从文件/文件夹导入，默认导入路径为`当前工程文件夹\layers`
+**导入图层**: 选择json文件导入
 
-> 如果默认路径不存在，则打开文件选择框
-
-**导出图层**: 导出为json文件，默认导出路径为`当前工程文件夹\layers`
+**导出图层**: 导出为json文件，默认导出路径为 `C:\Users\用户名\Documents\ShapeLayerSaver\layers`
 
 > 如果默认路径不存在，则新建文件夹
 >
