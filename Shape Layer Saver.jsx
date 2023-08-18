@@ -73,7 +73,7 @@
         }
     };
     var l = {
-        recur_factory: function (mode, _a) {
+        recur_factory: (function (mode, _a) {
             var _b = _a.GroupFn, GroupFn = _b === void 0 ? function (p, d) { return true; } : _b, _c = _a.PropertyFn, PropertyFn = _c === void 0 ? function (p, d) { return true; } : _c;
             var group_fn = mode + '_group', property_fn = mode + '_property';
             return function recur(p, d) {
@@ -91,7 +91,7 @@
                     }
                 }
             };
-        },
+        }),
         get_group: function (group, data, recur) {
             data['@matchName'] = group.matchName;
             PropertyGroup.prototype.map.call(group, function (property) {
@@ -142,7 +142,7 @@
             }
             if (!property.canVaryOverTime) {
                 get('value');
-                return;
+                return data;
             }
             if (property.canSetExpression && property.expression) {
                 get('expression');
@@ -235,7 +235,7 @@
                             }, true);
                             return true;
                         }
-                        case 'ADBE Effect Parade': return fn();
+                        case 'ADBE Effect Parade': return true;
                         case 'ADBE Transform Group': return fn();
                         default: return fn();
                     }
