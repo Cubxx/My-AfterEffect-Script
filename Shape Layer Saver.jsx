@@ -95,7 +95,10 @@
         get_group: function (group, data, recur) {
             data['@matchName'] = group.matchName;
             PropertyGroup.prototype.map.call(group, function (property) {
-                data[property.name] = recur(property, {});
+                var value = recur(property, {});
+                if (value != null) {
+                    data[property.name] = value;
+                }
             }, true);
             return data;
         },
@@ -133,6 +136,10 @@
         },
         get_property: function (property, data) {
             if (data === void 0) { data = {}; }
+            function get(key, value) {
+                var _a;
+                c.set_property_data(key, (_a = property[key]) !== null && _a !== void 0 ? _a : value, data);
+            }
             if (!property.canVaryOverTime) {
                 get('value');
                 return;
@@ -155,12 +162,13 @@
                 get('value');
             }
             return data;
-            function get(key, value) {
-                var _a;
-                c.set_property_data(key, (_a = property[key]) !== null && _a !== void 0 ? _a : value, data);
-            }
         },
         set_property: function (property, data) {
+            function convert(data) {
+                return data.map(function (value, key) {
+                    return c.get_property_data(key, data);
+                }, {});
+            }
             var _a = convert(data), value = _a.value, expression = _a.expression, expressionEnabled = _a.expressionEnabled, keys = _a.keys;
             if (value) {
                 property.setValue(value);
@@ -190,11 +198,6 @@
                 }, true);
             }
             return property;
-            function convert(data) {
-                return data.map(function (value, key) {
-                    return c.get_property_data(key, data);
-                }, {});
-            }
         },
         get_layer: function (layer, propertyNames) {
             if (propertyNames === void 0) { propertyNames = ['']; }
@@ -207,7 +210,7 @@
                 'outPoint',
                 'label',
                 'locked',
-                'shy ',
+                'shy',
                 'solo',
                 'stretch',
                 'outPoint',
@@ -232,14 +235,7 @@
                             }, true);
                             return true;
                         }
-                        case 'ADBE Effect Parade': {
-                            if (p.name != 'Compositing Options') {
-                                return true;
-                            }
-                            else {
-                                return false;
-                            }
-                        }
+                        case 'ADBE Effect Parade': return fn();
                         case 'ADBE Transform Group': return fn();
                         default: return fn();
                     }
@@ -470,6 +466,7 @@
             u.button(win, '导出', function () {
                 var path = h.getLayersPath();
                 a.export_layers(path);
+                alert("\u5DF2\u5BFC\u51FA\u81F3\n".concat(path));
                 listBox.updata();
             });
             var listBox = u.listbox(win, '图层', function () {
