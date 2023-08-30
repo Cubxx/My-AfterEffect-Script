@@ -1,7 +1,7 @@
 - [脚本依赖包](#脚本依赖包)
 - [脚本列表](#脚本列表)
   - [Toolbox.jsx](#toolboxjsx)
-  - [Shape Layer Saver.jsx](#shape-layer-saverjsx)
+  - [ShapeLayerSaver.jsx](#shapelayersaverjsx)
 ***
 
 # 脚本依赖包
@@ -10,8 +10,8 @@
 |                         脚本                         |                        依赖包                        |
 | :--------------------------------------------------: | :--------------------------------------------------: |
 |                       所有脚本                       |        [cubx-package.jsx](./cubx-package.jsx)        |
-|             [Toolbox.jsx](./Toolbox.jsx)             | [Shape Layer Saver.jsx](./Shape%20Layer%20Saver.jsx) |
-| [Shape Layer Saver.jsx](./Shape%20Layer%20Saver.jsx) |               [json2.jsx](./json2.jsx)               |
+|             [Toolbox.jsx](./Toolbox.jsx)             | [ShapeLayerSaver.jsx](./ShapeLayerSaver.jsx) |
+| [ShapeLayerSaver.jsx](./ShapeLayerSaver.jsx) |               [json2.jsx](./json2.jsx)               |
 
 
 # 脚本列表
@@ -22,7 +22,7 @@
 私的个人工具箱
 
 
-## [Shape Layer Saver.jsx](./Shape%20Layer%20Saver.jsx)
+## [ShapeLayerSaver.jsx](./ShapeLayerSaver.jsx)
 用于形状层存储
 
 **导入图层**: 选择json文件导入
