@@ -60,7 +60,7 @@ function abort(message) {
             var parentProperty = _a.parentProperty, propertyIndex = _a.propertyIndex;
             parentProperty(propertyIndex).remove();
         });
-        obj.map(function (value) { return value.remove(); });
+        obj.each(function (value) { return value.remove(); });
     };
     Object.prototype.is = function (className) {
         if (this instanceof className) {
@@ -70,23 +70,18 @@ function abort(message) {
             abort("\u6570\u636E\u7C7B\u578B\u4E0D\u4E3A ".concat(className));
         }
     };
-    Object.prototype.map = function (fn, newObj) {
-        if (newObj === void 0) { newObj = {}; }
+    Object.prototype.each = function (fn) {
         var obj = this;
         for (var key in obj) {
             if (obj.hasOwnProperty(key)) {
-                var e = fn(obj[key], key, obj);
-                if (e != null) {
-                    newObj[key] = e;
-                }
+                fn(obj[key], key, obj);
             }
         }
-        return newObj;
     };
-    PropertyGroup.prototype.map = function (fn, order) {
+    PropertyGroup.prototype.each = function (fn, order) {
         return map_factory(this, function (arr) { return arr.numProperties; })(function (arr, i) { return arr(i + 1); })(fn, order);
     };
-    MaskPropertyGroup.prototype.map = function (fn, order) {
+    MaskPropertyGroup.prototype.each = function (fn, order) {
         return map_factory(this, function (arr) { return arr.numProperties; })(function (arr, i) { return arr(i + 1); })(fn, order);
     };
 })();

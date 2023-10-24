@@ -18,11 +18,19 @@
             }
         }
         KeyframeData.isSpatial = function (property) {
-            return !![PropertyValueType.TwoD_SPATIAL, PropertyValueType.ThreeD_SPATIAL].filter(function (e) { return e == property.propertyValueType; }).length;
+            return !![PropertyValueType.TwoD_SPATIAL, PropertyValueType.ThreeD_SPATIAL].filter(function (e) { return e === property.propertyValueType; }).length;
         };
         return KeyframeData;
     }());
+    var LAYER_PATH = Folder.myDocuments.fsName + '\\ShapeLayerSaver\\layers';
     var b = {
+        set_undo_group: function (fn, fn_name) {
+            return function () {
+                app.beginUndoGroup("ShapeLayerSaver.".concat(fn_name));
+                fn();
+                app.endUndoGroup();
+            };
+        },
         get_active_comp: function () {
             var comp = app.project.activeItem;
             if (comp instanceof CompItem) {
@@ -94,7 +102,7 @@
         }),
         get_group: function (group, data, recur) {
             data['@matchName'] = group.matchName;
-            PropertyGroup.prototype.map.call(group, function (property) {
+            PropertyGroup.prototype.each.call(group, function (property) {
                 var value = recur(property, {});
                 if (value != null) {
                     data[property.name] = value;
@@ -103,8 +111,8 @@
             return data;
         },
         set_group: function (group, data, recur) {
-            data.map(function (sub_data, key) {
-                if (key[0] == '@') {
+            data.each(function (sub_data, key) {
+                if (key[0] === '@') {
                     return;
                 }
                 if (typeof sub_data !== 'object') {
@@ -116,7 +124,7 @@
                 if (matchName) {
                     if (group.canAddProperty(matchName)) {
                         property = group.addProperty(matchName);
-                        if (group.propertyType == PropertyType.INDEXED_GROUP) {
+                        if (group.propertyType === PropertyType.INDEXED_GROUP) {
                             property.name = name;
                         }
                     }
@@ -152,7 +160,7 @@
                 var keys = Array(property.numKeys);
                 keys.map(function (e, i, arr) {
                     var obj = arr[i] = new KeyframeData(property);
-                    obj.map(function (value, key, obj) {
+                    obj.each(function (value, key, obj) {
                         obj[key] = property["key".concat(key)](i + 1);
                     });
                 });
@@ -165,9 +173,11 @@
         },
         set_property: function (property, data) {
             function convert(data) {
-                return data.map(function (value, key) {
-                    return c.get_property_data(key, data);
-                }, {});
+                var obj = {};
+                data.each(function (value, key) {
+                    obj[key] = c.get_property_data(key, data);
+                });
+                return obj;
             }
             var _a = convert(data), value = _a.value, expression = _a.expression, expressionEnabled = _a.expressionEnabled, keys = _a.keys;
             if (value != null) {
@@ -178,13 +188,15 @@
                 property.expressionEnabled = expressionEnabled;
             }
             if (keys) {
+                if (keys.length === 0)
+                    alert('关键帧获取失败', '脚本警告');
                 keys.map(function (_a) {
                     var Time = _a.Time, Value = _a.Value;
                     property.setValueAtTime(Time, Value);
                 }, true);
                 var isSpatial_1 = KeyframeData.isSpatial(property);
                 keys.map(function (_a, i) {
-                    var InInterpolationType = _a.InInterpolationType, OutInterpolationType = _a.OutInterpolationType, InTemporalEase = _a.InTemporalEase, OutTemporalEase = _a.OutTemporalEase, TemporalAutoBezier = _a.TemporalAutoBezier, TemporalContinuous = _a.TemporalContinuous, Time = _a.Time, Value = _a.Value, SpatialAutoBezier = _a.SpatialAutoBezier, SpatialContinuous = _a.SpatialContinuous, InSpatialTangent = _a.InSpatialTangent, OutSpatialTangent = _a.OutSpatialTangent, Roving = _a.Roving;
+                    var InInterpolationType = _a.InInterpolationType, OutInterpolationType = _a.OutInterpolationType, InTemporalEase = _a.InTemporalEase, OutTemporalEase = _a.OutTemporalEase, TemporalAutoBezier = _a.TemporalAutoBezier, TemporalContinuous = _a.TemporalContinuous, SpatialAutoBezier = _a.SpatialAutoBezier, SpatialContinuous = _a.SpatialContinuous, InSpatialTangent = _a.InSpatialTangent, OutSpatialTangent = _a.OutSpatialTangent, Roving = _a.Roving;
                     property.setInterpolationTypeAtKey(i + 1, InInterpolationType, OutInterpolationType);
                     property.setTemporalEaseAtKey(i + 1, InTemporalEase, OutTemporalEase);
                     property.setTemporalAutoBezierAtKey(i + 1, TemporalAutoBezier);
@@ -270,7 +282,7 @@
             'TextDocument': function (v) { return v; },
             'KeyframeEase': function (v) { return v; },
             'KeyframeData': function (v) {
-                v.map(function (value, key, obj) {
+                v.each(function (value, key, obj) {
                     c.set_property_data(key, obj[key], obj);
                 });
                 return v;
@@ -278,13 +290,13 @@
         },
         _obj2any: {
             'object[]': function (v) {
-                return v.map(function (e, i, arr) {
-                    return c.get_property_data(i + '', arr);
-                });
+                return v.map(function (e, i, arr) { return c.get_property_data(i + '', arr); });
             },
             'MarkerValue': function (v) { return new MarkerValue(''); },
             'Shape': function (v) {
-                return v.map(function (value) { return value; }, new Shape());
+                var obj = new Shape();
+                v.each(function (value, key) { obj[key] = value; });
+                return obj;
             },
             'TextDocument': function (v) { return new TextDocument(''); },
             'KeyframeEase': function (v) {
@@ -292,9 +304,11 @@
                 return new KeyframeEase(speed, influence < 0.1 ? 0.1 : influence);
             },
             'KeyframeData': function (v) {
-                return v.map(function (value, key, obj) {
-                    return c.get_property_data(key, obj);
+                var _obj = {};
+                v.each(function (value, key, obj) {
+                    _obj[key] = c.get_property_data(key, obj);
                 });
+                return _obj;
             }
         },
         type: function (value) {
@@ -307,10 +321,10 @@
                 case 'KeyframeData': return type;
             }
             if (value instanceof Array) {
-                if (value.length == 0) {
+                if (value.length === 0) {
                     return;
                 }
-                else if (value.filter(function (e) { return typeof e === 'object'; }).length == value.length) {
+                else if (value.filter(function (e) { return typeof e === 'object'; }).length === value.length) {
                     return 'object[]';
                 }
             }
@@ -332,7 +346,7 @@
                 delete value['@type'];
                 return c._obj2any[type](value);
             }
-            else if (c.type(value) == 'object[]') {
+            else if (c.type(value) === 'object[]') {
                 return c._obj2any['object[]'](value);
             }
             return value;
@@ -354,23 +368,11 @@
             file.write(text);
             file.close();
         },
-        open: function (path) {
-            var file = path ? new File(path) : File.openDialog();
-            if (!file)
-                return;
-            return f.read(file);
-        },
-        save: function (path, text) {
-            var file = path ? new File(path) : File.saveDialog();
-            if (!file)
-                return;
-            f.write(file, text);
-        },
-        multi_open: function (path) {
-            var folder = new Folder(path);
-            var files = folder.exists
-                ? folder.getFiles().filter(function (f) { return f instanceof File; })
-                : File.openDialog(undefined, undefined, true);
+        multi_open: function (dir) {
+            var F = new File(dir);
+            var files = F.exists
+                ? F.openDlg(void 0, '*.json', true)
+                : abort('文件夹路径不存在');
             if (!files)
                 return;
             var datas = {};
@@ -379,32 +381,27 @@
             });
             return datas;
         },
-        multi_save: function (path, datas) {
-            var folder = path
-                ? new Folder(path)
-                : new Folder(app.project.file.fsName).selectDlg();
+        multi_save: function (dir, datas) {
+            var folder = new Folder(dir).selectDlg();
             if (!folder)
                 return;
             if (folder.exists || folder.create()) {
-                datas.map(function (text, name) {
-                    f.save("".concat(folder.fsName, "/").concat(name), text);
+                datas.each(function (text, name) {
+                    var filePath = folder.fsName + '/' + name;
+                    var file = new File(filePath);
+                    if (file.exists) {
+                        if (confirm('发现同名文件, 是否覆盖?\n' + name)) {
+                            f.write(file, text);
+                        }
+                    }
+                    else {
+                        f.write(file, text);
+                    }
                 });
             }
             else {
-                abort('文件夹创建失败' + path);
+                abort('文件夹创建失败\n' + dir);
             }
-        }
-    };
-    var h = {
-        getLayersPath: function () {
-            return Folder.myDocuments.fsName + '\\ShapeLayerSaver\\layers';
-        },
-        set_undo_group: function (fn, fn_name) {
-            return function () {
-                app.beginUndoGroup("ShapeLayerSaver.".concat(fn_name));
-                fn();
-                app.endUndoGroup();
-            };
         }
     };
     var u = {
@@ -417,8 +414,8 @@
         },
         palette: function () {
             var win = (that instanceof Panel) ? that : new Window("palette", undefined, undefined, { resizeable: true });
-            win.orientation = "column";
-            win.alignChildren = "left";
+            win.orientation = "row";
+            win.alignChildren = "center";
             win.margins = 0;
             win.spacing = 5;
             return win;
@@ -428,16 +425,8 @@
             if (onClick === void 0) { onClick = function () { }; }
             var button = node.add("button");
             button.text = text;
-            button.onClick = h.set_undo_group(onClick, text);
+            button.onClick = b.set_undo_group(onClick, text);
             return button;
-        },
-        listbox: function (node, text, onDoubleClick) {
-            if (text === void 0) { text = ''; }
-            if (onDoubleClick === void 0) { onDoubleClick = function () { }; }
-            var box = node.add("listbox");
-            box.helpTip = onDoubleClick._name || '';
-            box.onDoubleClick = h.set_undo_group(onDoubleClick, text);
-            return box;
         }
     };
     var a = {
@@ -445,7 +434,7 @@
             var datas = f.multi_open(path);
             if (!datas)
                 return;
-            datas.map(function (value) {
+            datas.each(function (value) {
                 b.import_layer(JSON.parse(value));
             });
         },
@@ -461,39 +450,14 @@
         UI: function () {
             var win = u.palette();
             u.button(win, '导入', function () {
-                a.import_layers();
+                a.import_layers(LAYER_PATH);
             });
             u.button(win, '导出', function () {
-                var path = h.getLayersPath();
-                a.export_layers(path);
-                alert("\u5DF2\u5BFC\u51FA\u81F3\n".concat(path));
-                listBox.updata();
+                a.export_layers(LAYER_PATH);
+                alert("\u5BFC\u51FA\u7ED3\u675F, \u8BF7\u67E5\u770B\u6587\u4EF6\u5939\n".concat(LAYER_PATH));
             });
-            var listBox = u.listbox(win, '图层', function () {
-                b.import_layer(JSON.parse(listBox.data[listBox.selection.text]));
-            });
-            listBox.updata = function () {
-                var that = this;
-                var path = h.getLayersPath();
-                var folder = new Folder(path);
-                if (folder.exists) {
-                    that.removeAll();
-                    that.data = f.multi_open(path);
-                    that.data.map(function (value, key) {
-                        if (/\.json$/.test(key)) {
-                            that.add("item", key);
-                        }
-                    });
-                }
-                else {
-                    folder.create();
-                }
-            };
-            listBox.updata();
             win.onResizing = win.onResize = function () {
-                this.layout.resize();
-                listBox.size[0] = win.size[0];
-                listBox.size[1] = win.size[1] - 100;
+                win.layout.resize();
             };
             u.show(win);
         }

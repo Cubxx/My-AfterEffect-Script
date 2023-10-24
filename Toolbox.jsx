@@ -1,10 +1,9 @@
-!function (that) {
-    function capture(err, message) {
-        if (message === void 0) { message = ''; }
-    }
+var _this = this;
+(function () {
+    var that = _this;
     var b = {
         set_fns_name: function () {
-            b.map(function (fn, key) {
+            b.each(function (fn, key) {
                 if (fn instanceof Function) {
                     fn._name = key;
                 }
@@ -79,7 +78,7 @@
             var new_layer = layer.duplicate();
             new_layer.name = [layer.name, group.name].join(' - ');
             var contents = new_layer.property('ADBE Root Vectors Group').is(PropertyGroup);
-            contents.map(function (e, i) {
+            contents.each(function (e, i) {
                 if (i + 1 != group.propertyIndex) {
                     return e;
                 }
@@ -114,7 +113,7 @@
         unpack_layer: function (layer) {
             layer.selected = true;
             var contents = layer.property('ADBE Root Vectors Group').is(PropertyGroup);
-            var group_array = contents.map(function (e) {
+            var group_array = contents.each(function (e) {
                 if (e instanceof PropertyGroup && !(e instanceof MaskPropertyGroup)) {
                     return e;
                 }
@@ -182,21 +181,6 @@
                     break;
                 default: break;
             }
-        },
-        open_lib: function (libName) {
-            var lib = $.global[libName];
-            lib
-                ? (typeof lib.UI === 'function'
-                    ? lib.UI()
-                    : abort("".concat(libName, " \u5E93\u6CA1\u6709UI\u754C\u9762")))
-                : abort("\u7F3A\u5C11\u4F9D\u8D56\u5E93 ".concat(libName, "\n\u8BF7\u628A\u5E93\u6587\u4EF6\u653E\u81F3 Startup \u6587\u4EF6\u5939"));
-        },
-        open_fn_factory: function (libName) {
-            function fn() {
-                b.open_lib(libName);
-            }
-            fn._name = "open_".concat(libName);
-            return fn;
         }
     };
     var u = {
@@ -246,7 +230,6 @@
             var win = u.palette();
             u.button(win, "UC", b.unpack_selected_comps);
             u.button(win, "UL", b.unpack_selected_layers);
-            u.button(win, "SS", b.open_fn_factory('ShapeLayerSaver'));
             u.button(win, "AS", b.add_solid_layer);
             u.button(win, "AA", b.add_adjustment_layer);
             u.button(win, "AN", b.add_null_layer);
@@ -255,16 +238,11 @@
             u.button(win, "F", b.fix_expression);
             u.show(win);
         },
-        init: function () {
-            b.set_fns_name();
-        },
-        test: function () {
-            b.set_undo_group(b.unpack_selected_layers)();
-        },
+        test: function () { },
         run: function () {
-            a.init();
+            b.set_fns_name();
             a.UI();
         }
     };
     a.run();
-}(this);
+})();
