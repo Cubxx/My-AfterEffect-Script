@@ -226,13 +226,22 @@
                 'solo',
                 'stretch',
                 'outPoint',
-            ].concat(propertyNames).map(function (key) {
+            ].concat(propertyNames)
+                .map(function (key) {
                 data[key] = layer[key];
             }, true);
+            function defaultFn(p, d) {
+                if (p.canSetEnabled && !p.enabled) {
+                    d['enabled'] = false;
+                }
+                if (p.isModified) {
+                    return true;
+                }
+            }
             l.get_group(layer, data, l.recur_factory('get', {
                 GroupFn: function (p, d) {
                     switch (p.parentProperty.matchName) {
-                        case 'ADBE Root Vectors Group': return fn();
+                        case 'ADBE Root Vectors Group': return defaultFn(p, d);
                         case 'ADBE Mask Parade': {
                             [
                                 'color',
@@ -248,20 +257,11 @@
                             return true;
                         }
                         case 'ADBE Effect Parade': return true;
-                        case 'ADBE Transform Group': return fn();
-                        default: return fn();
-                    }
-                    function fn() {
-                        if (p.isModified) {
-                            return true;
-                        }
+                        case 'ADBE Transform Group': return defaultFn(p, d);
+                        default: return defaultFn(p, d);
                     }
                 },
-                PropertyFn: function (p, d) {
-                    if (p.isModified) {
-                        return true;
-                    }
-                }
+                PropertyFn: defaultFn
             }));
             return data;
         },
