@@ -231,10 +231,10 @@
                 data[key] = layer[key];
             }, true);
             function defaultFn(p, d) {
-                if (p.canSetEnabled && !p.enabled) {
-                    d['enabled'] = false;
-                }
                 if (p.isModified) {
+                    if (p.canSetEnabled && !p.enabled) {
+                        d['enabled'] = false;
+                    }
                     return true;
                 }
             }
@@ -250,7 +250,7 @@
                                 'maskFeatherFalloff',
                                 'maskMode',
                                 'maskMotionBlur',
-                                'rotoBezier'
+                                'rotoBezier',
                             ].map(function (key) {
                                 d[key] = p[key];
                             }, true);
@@ -261,7 +261,14 @@
                         default: return defaultFn(p, d);
                     }
                 },
-                PropertyFn: defaultFn
+                PropertyFn: function (p, d) {
+                    return defaultFn(p, d) &&
+                        [
+                            'X Position',
+                            'Y Position',
+                        ].filter(function (e) { return e === p.name; })
+                            .length === 0;
+                }
             }));
             return data;
         },
