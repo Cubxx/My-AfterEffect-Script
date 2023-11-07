@@ -161,7 +161,7 @@
                 keys.map(function (e, i, arr) {
                     var obj = arr[i] = new KeyframeData(property);
                     obj.each(function (value, key, obj) {
-                        obj[key] = property["key".concat(key)](i + 1);
+                        obj[key] = property['key'.concat(key)](i + 1);
                     });
                 });
                 get('keys', keys);
@@ -415,59 +415,54 @@
         show: function (win) {
             win.layout.layout(true);
             win.layout.resize();
+            win.onResizing = win.onResize = function () { return win.layout.resize(); };
             if (win instanceof Window) {
                 win.show();
             }
         },
         palette: function () {
-            var win = (that instanceof Panel) ? that : new Window("palette", undefined, undefined, { resizeable: true });
-            win.orientation = "row";
-            win.alignChildren = "center";
+            var win = (that instanceof Panel) ? that : new Window('palette', undefined, undefined, { resizeable: true });
+            win.orientation = 'row';
+            win.alignChildren = 'top';
             win.margins = 0;
-            win.spacing = 5;
+            win.spacing = 0;
             return win;
         },
-        button: function (node, text, onClick) {
-            if (text === void 0) { text = ''; }
+        button: function (node, type, onClick) {
             if (onClick === void 0) { onClick = function () { }; }
-            var button = node.add("button");
-            button.text = text;
-            button.onClick = b.set_undo_group(onClick, text);
+            var button = node.add('iconbutton', void 0, File.decode(u.icons[type]), { style: 'toolbutton' });
+            button.onClick = b.set_undo_group(onClick, type);
             return button;
+        },
+        icons: {
+            'import': "%C2%89PNG%0D%0A%1A%0A%00%00%00%0DIHDR%00%00%00%18%00%00%00%18%08%06%00%00%00%C3%A0w%3D%C3%B8%00%00%00%09pHYs%00%00%0E%C3%83%00%00%0E%C3%83%01%C3%87o%C2%A8d%00%00%00%19tEXtSoftware%00www.inkscape.org%C2%9B%C3%AE%3C%1A%00%00%01%06IDATH%C2%89%C3%AD%C3%95%C2%B1J%C3%83P%14%06%C3%A0%C2%AF%C2%AD%08%C2%82%C2%AB%C3%AD%23%18PQp%C3%AB%22%05_%C3%87%07%C3%AB%C3%A0%C3%AA%26%C3%A2%03%08%1D%C2%AB%2FPpvq%C3%90%C3%AB%C3%A0%09%C3%9Eh%C2%9A%26%C2%81%C2%82C%7F%C3%B89I%C3%8E9%C3%BF%7F%C3%AF!%C2%B9%19%C2%A4%C2%94l%13%C3%83%C2%AD%C2%AA%C3%B70%C2%B8%09%C2%B6%C3%86%C2%A0%C3%A3%C2%88%1E%22%C3%8E%C3%9A6%C3%BC%C2%BB%11%C3%AD%0Cv%06%C3%9D%0C%C3%86%C2%B8E%C3%91PSD%C3%8D%C2%B8%C2%8F%01L%7D%7F%5Cu%26E%C3%A4%C2%A6M%02M%06%C2%AF%C2%B8%C3%82'%1Eq%C2%92%C3%A5%C2%8Eq%C2%8F%01%C2%AE%C2%A3%C2%B6%16m%C2%8E%C2%8Ar%C2%A5%C3%B0%16%C3%B10%C3%A2%0C%C3%8B%C3%86%C3%AE%C2%94R%C3%89%C2%A3%C2%A0%1A%16)%C2%A5U%C3%BA%C3%81*%C2%9E%C3%95%C3%95Vt%C3%B2%C3%84%5D%C2%B0%C2%AE)7i%12%C3%BF%C2%A3%C2%B3%C2%97m%C3%A6%60%C3%83%C2%A8%C2%968%C2%8F%C3%AB%C2%B53%C3%BF%C2%AD%C2%93%1B%24%C2%8C6%C2%984%09%C2%97%18%C3%A2%23%C2%BF)%C3%B1%C2%82SLZ%C2%88%C2%AC%C3%83%04g%C2%A1%C2%85%C3%AA%5BT%C3%A0%09%C3%AFX%C3%A4%C2%ABh%C2%89%11.%C2%B0%C2%8FK%3CS%C3%9D%C3%812%12%C3%B3%1E%C3%A2%C2%A2g%C2%9E%C2%8B%C3%93%C3%BD%C2%97%C3%99%19%5B%3F%C3%AC%C2%BE%00%7B%7D%C3%87%C2%97%C3%97%C3%B7%05%0E%00%00%00%00IEND%C2%AEB%60%C2%82",
+            'export': "%C2%89PNG%0D%0A%1A%0A%00%00%00%0DIHDR%00%00%00%18%00%00%00%18%08%06%00%00%00%C3%A0w%3D%C3%B8%00%00%00%09pHYs%00%00%0E%C3%83%00%00%0E%C3%83%01%C3%87o%C2%A8d%00%00%00%19tEXtSoftware%00www.inkscape.org%C2%9B%C3%AE%3C%1A%00%00%00%C3%ACIDATH%C2%89%C3%AD%C2%95%C3%81%09%C3%82%40%10E_%C2%8C%08%16%20%C2%B6%20b%40%C2%B0%0B%C2%9B%C2%B0%13%C2%AFzK%0D%1E%C2%ADB%1B%10%3C%C2%89%C3%9A%C2%82%05%C2%88%C2%88%C2%8C%C2%97%C2%91%C3%8CJ4cd%C3%81%C2%83%1F%C2%86%C2%B0%C3%99%C2%9D%C3%B7%C2%B2%C2%B0K%12%11!f%1AQ%C3%A95%04S-%7FD%C3%84%5B%C2%B9%14%C3%89%C2%BD%7D%C2%9F%C3%82%C2%AFZn%C2%89%07%3E7%C3%80%C2%B5%C2%88%C2%ACDdf%C3%9E%25%C3%9F%08r%03B%C3%A1%C2%AB%17s%1F%0B%C2%B2%12%C2%80%15XIVw%07%C3%BD%C2%A7%C3%B1%C2%B3%C2%A0lMPU%C3%87t%C3%A78%C2%88o%C3%97%C3%BC%C3%9CE%C3%BB%0B%C3%A2%0A%3AZ%C3%9F%26%C3%A04%C3%8D%C3%84B%C2%9F%C3%A37%C3%8Dg%C2%87%20%C3%A0XA%C3%9B%C3%91%3Cq%C2%AC%098V%20%40Z%C3%91%7Cr%08%1A%C3%80%C3%8D%0E%1E9%02%03%C2%A0%C3%AB%C2%80%C2%BCJ%17%C3%88%C2%94%05%40%22%C3%85%3F%C2%B9%07l%C2%80%0B%C2%B0%C2%B5_%C3%A1L%0A%0C%C2%81%160%02%0E%10%C3%AE%60%C2%AF%13%C3%8B%1Ap%C2%B4gi%C3%A1%10%C3%AE%20J%C2%A2_%C2%B4%3B%C3%81n%C3%A7%C2%99%C3%97X!%20%00%00%00%00IEND%C2%AEB%60%C2%82"
         }
     };
     var a = {
-        import_layers: function (path) {
-            var datas = f.multi_open(path);
+        import_layers: function () {
+            var datas = f.multi_open(LAYER_PATH);
             if (!datas)
                 return;
             datas.each(function (value) {
                 b.import_layer(JSON.parse(value));
             });
         },
-        export_layers: function (path) {
+        export_layers: function () {
             var layers = b.get_selected_layers();
             layers.checkLength('请先选择图层');
             var datas = {};
             layers.map(function (layer) {
                 datas[layer.name + '.json'] = b.export_layer(layer);
             });
-            f.multi_save(path, datas);
+            f.multi_save(LAYER_PATH, datas);
         },
         UI: function () {
             var win = u.palette();
-            u.button(win, '导入', function () {
-                a.import_layers(LAYER_PATH);
-            });
-            u.button(win, '导出', function () {
-                a.export_layers(LAYER_PATH);
-                alert("\u5BFC\u51FA\u7ED3\u675F, \u8BF7\u67E5\u770B\u6587\u4EF6\u5939\n".concat(LAYER_PATH));
-            });
-            win.onResizing = win.onResize = function () {
-                win.layout.resize();
-            };
+            u.button(win, 'import', function () { return a.import_layers(); });
+            u.button(win, 'export', function () { return a.export_layers(); });
             u.show(win);
         }
     };
-    return typeof ShapeLayerSaver === "undefined" ? (ShapeLayerSaver = a) : a;
-})(this).UI();
+    a.UI();
+})(this);

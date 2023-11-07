@@ -31,17 +31,4 @@
 
 > 如果默认路径不存在，则新建文件夹
 >
-> 每个图层对应一个json文件。如果图层名重复，只会导出最后一个图层
-
-**作为模块**: 放至`Startup`文件夹，通过全局变量`ShapeLayerSaver`调用模块
-
-> 作为模块使用前，需要删除jsx文件末的UI方法调用
->
-> ``` typescript
-> // 模块接口
-> declare const ShapeLayerSaver: {
->     import_layers(path?: string): void;
->     export_layers(path?: string): void;
->     UI(): void;
-> }
-> ```
+> 每个图层对应一个json文件。如果图层名重复，会提示是否覆盖

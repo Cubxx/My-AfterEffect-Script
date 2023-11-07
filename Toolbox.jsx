@@ -199,20 +199,6 @@ var _this = this;
             win.margins = 0;
             return win;
         },
-        panel: function (node, text) {
-            if (text === void 0) { text = ''; }
-            var panel = node.add("panel");
-            panel.text = text;
-            panel.orientation = "column";
-            panel.alignChildren = "left";
-            return panel;
-        },
-        group: function (node) {
-            var group = node.add("group");
-            group.orientation = "column";
-            group.alignChildren = ["left", "center"];
-            return group;
-        },
         button: function (node, text, onClick) {
             if (text === void 0) { text = ''; }
             if (onClick === void 0) { onClick = function () { }; }
