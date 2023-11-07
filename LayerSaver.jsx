@@ -22,7 +22,7 @@
         };
         return KeyframeData;
     }());
-    var LAYER_PATH = Folder.myDocuments.fsName + '\\ShapeLayerSaver\\layers';
+    var LAYER_PATH = Folder.myDocuments.fsName + '\\LayerSaver\\layers';
     var b = {
         set_undo_group: function (fn, fn_name) {
             return function () {
@@ -41,24 +41,28 @@
             }
         },
         get_selected_layers: function () {
-            return b.get_active_comp().selectedLayers;
+            var layers = b.get_active_comp().selectedLayers;
+            layers.checkLength('请先选择图层');
+            return layers;
         },
-        add_layer: function () {
-            return b.get_active_comp().layers.addShape();
-        },
+        add_layer: (function (type) {
+            switch (type) {
+                case 'shape': return b.get_active_comp().layers.addShape();
+                case 'text': return b.get_active_comp().layers.addText();
+            }
+        }),
         import_layer: function (data) {
-            var layer = b.add_layer();
+            var matchTypes = {
+                'ADBE Vector Layer': 'shape',
+                'ADBE Text Layer': 'text'
+            };
+            var layer = b.add_layer(matchTypes[data['@matchName']]);
             l.set_layer(layer, data);
             return layer;
         },
         export_layer: function (layer) {
             if (layer.parent) {
                 abort('抱歉，暂不支持导出有父级图层的图层');
-            }
-            if (layer instanceof ShapeLayer) { }
-            else {
-                abort('抱歉，目前只支持导出形状层');
-                return;
             }
             var propertyNames = [
                 'adjustmentLayer',
@@ -74,8 +78,27 @@
                 'threeDLayer',
                 'trackMatteType',
             ];
-            layer.canSetCollapseTransformation && propertyNames.push('collapseTransformation');
-            layer.canSetTimeRemapEnabled && propertyNames.push('timeRemapEnabled');
+            if (layer instanceof ShapeLayer) {
+                layer.canSetCollapseTransformation && propertyNames.push('collapseTransformation');
+                layer.canSetTimeRemapEnabled && propertyNames.push('timeRemapEnabled');
+            }
+            else if (layer instanceof TextLayer) {
+                layer.canSetCollapseTransformation && propertyNames.push('collapseTransformation');
+                layer.canSetTimeRemapEnabled && propertyNames.push('timeRemapEnabled');
+                propertyNames.push('threeDPerChar');
+            }
+            else if (layer instanceof AVLayer) {
+                abort('导出失败：无法导出音视频层');
+            }
+            else if (layer instanceof CameraLayer) {
+                abort('导出失败：无法导出摄像机层');
+            }
+            else if (layer instanceof LightLayer) {
+                abort('导出失败：无法导出灯光层');
+            }
+            else {
+                abort('导出失败：无法识别图层类型');
+            }
             var data = l.get_layer(layer, propertyNames);
             return JSON.stringify(data).replace(/\[\s+\]/g, '[]').replace(/\{\s+\}/g, '{}');
         }
@@ -129,7 +152,7 @@
                         }
                     }
                     else {
-                        property = group.property(name);
+                        property = group.property(matchName);
                     }
                 }
                 else if (name) {
@@ -166,7 +189,7 @@
                 });
                 get('keys', keys);
             }
-            if (!data['expression'] && !data['keys']) {
+            else {
                 get('value');
             }
             return data;
@@ -181,7 +204,13 @@
             }
             var _a = convert(data), value = _a.value, expression = _a.expression, expressionEnabled = _a.expressionEnabled, keys = _a.keys;
             if (value != null) {
-                property.setValue(value);
+                if (property.name === 'Source Text') {
+                    property.setValue(new TextDocument(value.text));
+                    value.each(function (v, k) { property.value[k] = v; });
+                }
+                else {
+                    property.setValue(value);
+                }
             }
             if (expression) {
                 property.expression = expression;
@@ -262,12 +291,20 @@
                     }
                 },
                 PropertyFn: function (p, d) {
-                    return defaultFn(p, d) &&
-                        [
-                            'X Position',
-                            'Y Position',
-                        ].filter(function (e) { return e === p.name; })
-                            .length === 0;
+                    switch (p.parentProperty.matchName) {
+                        case 'ADBE Text Animator Properties': {
+                            d['@matchName'] = p.matchName;
+                            return defaultFn(p, d);
+                        }
+                        case 'ADBE Transform Group': {
+                            return defaultFn(p, d) && [
+                                'X Position',
+                                'Y Position',
+                            ].filter(function (e) { return e === p.name; })
+                                .length === 0;
+                        }
+                        default: return defaultFn(p, d);
+                    }
                 }
             }));
             return data;
@@ -286,7 +323,29 @@
             },
             'MarkerValue': function (v) { return v; },
             'Shape': function (v) { return v; },
-            'TextDocument': function (v) { return v; },
+            'TextDocument': function (v) {
+                var obj = {};
+                [
+                    'applyFill',
+                    'applyStroke',
+                    'fillColor',
+                    'font',
+                    'fontSize',
+                    'justification',
+                    'leading',
+                    'strokeColor',
+                    'strokeOverFill',
+                    'strokeWidth',
+                    'text',
+                    'tracking',
+                ].concat(v.boxText ? [
+                    'boxTextPos',
+                    'boxTextSize',
+                ] : []).map(function (key) {
+                    obj[key] = v[key];
+                });
+                return obj;
+            },
             'KeyframeEase': function (v) { return v; },
             'KeyframeData': function (v) {
                 v.each(function (value, key, obj) {
@@ -305,7 +364,7 @@
                 v.each(function (value, key) { obj[key] = value; });
                 return obj;
             },
-            'TextDocument': function (v) { return new TextDocument(''); },
+            'TextDocument': function (v) { return v; },
             'KeyframeEase': function (v) {
                 var _a = v, speed = _a.speed, influence = _a.influence;
                 return new KeyframeEase(speed, influence < 0.1 ? 0.1 : influence);
@@ -450,7 +509,6 @@
         },
         export_layers: function () {
             var layers = b.get_selected_layers();
-            layers.checkLength('请先选择图层');
             var datas = {};
             layers.map(function (layer) {
                 datas[layer.name + '.json'] = b.export_layer(layer);
@@ -459,8 +517,8 @@
         },
         UI: function () {
             var win = u.palette();
-            u.button(win, 'import', function () { return a.import_layers(); });
-            u.button(win, 'export', function () { return a.export_layers(); });
+            u.button(win, 'import', a.import_layers);
+            u.button(win, 'export', a.export_layers);
             u.show(win);
         }
     };

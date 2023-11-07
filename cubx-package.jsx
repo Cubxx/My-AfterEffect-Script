@@ -62,12 +62,12 @@ function abort(message) {
         });
         obj.each(function (value) { return value.remove(); });
     };
-    Object.prototype.is = function (className) {
-        if (this instanceof className) {
+    Object.prototype.is = function (constructor) {
+        if (this instanceof constructor) {
             return this;
         }
         else {
-            abort("\u6570\u636E\u7C7B\u578B\u4E0D\u4E3A ".concat(className));
+            abort("\u6570\u636E\u7C7B\u578B\u4E0D\u4E3A ".concat(constructor));
         }
     };
     Object.prototype.each = function (fn) {
