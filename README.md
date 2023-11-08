@@ -7,7 +7,7 @@
 # 脚本依赖包
 如无特殊说明，包/模块文件都应放到`.\Support Files\Scripts\Startup`
 
-本项目所有脚本都需要依赖包: **[cubx-package.jsx](./cubx-package.jsx)**
+本项目所有脚本都需要依赖包: **[cubx.jsx](./cubx.jsx)**
 |                脚本                |        其他依赖包        |
 | :--------------------------------: | :----------------------: |
 |    [Toolbox.jsx](./Toolbox.jsx)    |                          |
