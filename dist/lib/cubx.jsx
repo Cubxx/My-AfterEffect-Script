@@ -110,7 +110,7 @@ var cubx = function () {
                 var new_layer = layer.duplicate();
                 new_layer.name = [layer.name, group.name].join(' - ');
                 var contents = new_layer.property('ADBE Root Vectors Group').is(PropertyGroup);
-                var beDels = contents.each(function (e, i) {
+                var beDels = contents.map(function (e, i) {
                     if (i + 1 != group.propertyIndex) {
                         return e;
                     }
@@ -148,7 +148,7 @@ var cubx = function () {
             unpack_layer: function (layer) {
                 layer.selected = true;
                 var contents = layer.property('ADBE Root Vectors Group').is(PropertyGroup);
-                var group_array = contents.each(function (e) {
+                var group_array = contents.map(function (e) {
                     if (e instanceof PropertyGroup && !(e instanceof MaskPropertyGroup)) {
                         return e;
                     }
@@ -271,7 +271,7 @@ var cubx = function () {
         },
         f: {
             read: function (path) {
-                var file = f.repair_path(path);
+                var file = (path instanceof File) ? path : f.repair_path(path);
                 file.encoding = 'utf-8';
                 file.open('r');
                 var text = file.read();
@@ -279,24 +279,31 @@ var cubx = function () {
                 return text;
             },
             write: function (path, text) {
-                var file = f.repair_path(path);
+                var file = (path instanceof File) ? path : f.repair_path(path);
                 file.encoding = 'utf-8';
                 file.open('w');
                 file.write(text);
                 file.close();
             },
-            multi_open: function (dir) {
-                var files = new File(dir).openDlg(void 0, '*.json', true);
+            open: function (config) {
+                var path = config.path, prompt = config.prompt, filter = config.filter, multi = config.multi;
+                var files = path !== void 0
+                    ? new File(path).openDlg(prompt, filter, multi)
+                    : File.openDialog(prompt, filter, multi);
                 if (!files)
                     return;
                 var datas = {};
-                files.map(function (file) {
+                (files instanceof File ? [files] : files)
+                    .map(function (file) {
                     datas[File.decode(file.name)] = f.read(file.fsName);
                 });
                 return datas;
             },
-            multi_save: function (dir, datas) {
-                var folder = new Folder(dir).selectDlg();
+            save: function (datas, config) {
+                var path = config.path, prompt = config.prompt;
+                var folder = path !== void 0
+                    ? new Folder(path).selectDlg(prompt)
+                    : Folder.selectDialog(prompt);
                 if (!folder)
                     return;
                 datas.each(function (text, name) {
@@ -389,10 +396,10 @@ var abort = cubx.a.abort;
         config.each(function (v, k) { _this[k] = v; });
         return this;
     };
-    PropertyGroup.prototype.each = function (fn, order) {
+    PropertyGroup.prototype.map = function (fn, order) {
         return map_factory(this, function (arr) { return arr.numProperties; })(function (arr, i) { return arr(i + 1); })(fn, order);
     };
-    MaskPropertyGroup.prototype.each = function (fn, order) {
+    MaskPropertyGroup.prototype.map = function (fn, order) {
         return map_factory(this, function (arr) { return arr.numProperties; })(function (arr, i) { return arr(i + 1); })(fn, order);
     };
 })();

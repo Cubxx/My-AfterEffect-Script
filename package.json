@@ -1,0 +1,12 @@
+{
+  "name": "ae-scripts",
+  "version": "1.0.0",
+  "description": "",
+  "keywords": [],
+  "author": "cubxx",
+  "license": "ISC",
+  "dependencies": {
+    "types-for-adobe": "^7.0.12",
+    "typescript": "^5.2.2"
+  }
+}

@@ -1,6 +1,6 @@
 (function (that) {
     var b = cubx.b, u = cubx.u;
-    var a = {
+    var f = {
         fix_expression: function () {
             var maps = [
                 ['点', 'Point'],
@@ -27,7 +27,9 @@
                     break;
                 default: break;
             }
-        },
+        }
+    };
+    var a = {
         UI: function () {
             function btn(node, text, fn) {
                 u.button(node, text).assign({
@@ -43,7 +45,7 @@
             btn(win, "AN", b.add_null_layer);
             btn(win, "AG", b.add_layers_from_selected_groups);
             btn(win, "R", b.render_selected_comps);
-            btn(win, "F", a.fix_expression);
+            btn(win, "F", f.fix_expression);
             u.show(win);
         }
     };

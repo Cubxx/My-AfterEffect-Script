@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "ES3",
+    "ignoreDeprecations": "5.0",
+    "jsx": "preserve",
+    "noLib": true,
+    "module": "none",
+    "types": [
+      "types-for-adobe/AfterEffects/22.0"
+    ],
+    "rootDir": "./ts",
+    "outDir": "./dist",
+    "removeComments": true,
+    "forceConsistentCasingInFileNames": true,
+  },
+  "exclude": [
+    "node_modules"
+  ],
+}

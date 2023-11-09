@@ -1,34 +1,42 @@
-- [脚本依赖包](#脚本依赖包)
-- [脚本列表](#脚本列表)
+- [介绍](#介绍)
+- [模块](#模块)
+  - [cubx.jsx](#cubxjsx)
+  - [json2.jsx](#json2jsx)
+- [UI脚本](#ui脚本)
   - [Toolbox.jsx](#toolboxjsx)
   - [LayerSaver.jsx](#layersaverjsx)
+- [普通脚本](#普通脚本)
 ***
 
-# 脚本依赖包
-如无特殊说明，包/模块文件都应放到`.\Support Files\Scripts\Startup`
+# 介绍
+本项目用于存储一些自制AE脚本
 
-本项目所有脚本都需要依赖包: **[cubx.jsx](./cubx.jsx)**
-|                脚本                |        其他依赖包        |
-| :--------------------------------: | :----------------------: |
-|    [Toolbox.jsx](./Toolbox.jsx)    |                          |
-| [LayerSaver.jsx](./LayerSaver.jsx) | [json2.jsx](./json2.jsx) |
+所有脚本放在dist文件夹
 
+**所有脚本都需要模块: cubx.jsx**
 
-# 脚本列表
-如无特殊说明，脚本都应放到`.\Support Files\Scripts\ScriptUI Panels`
-
-
-## [Toolbox.jsx](./Toolbox.jsx)
-私的个人工具箱
+| 脚本类型              | 项目文件夹            | 本地文件夹                                |
+| :-------------------- | :-------------------- | :---------------------------------------- |
+| [模块](#模块)         | [lib](dist/lib)       | `.\Support Files\Scripts\Startup`         |
+| [UI脚本](#UI脚本)     | [UI](dist/UI)         | `.\Support Files\Scripts\ScriptUI Panels` |
+| [普通脚本](#普通脚本) | [script](dist/script) | `.\Support Files\Scripts`                 |
 
 
-## [LayerSaver.jsx](./LayerSaver.jsx)
+# 模块
+## cubx.jsx
+封装了一些常用模块：文件系统、UI构建、工具函数等
+
+## json2.jsx
+来自：https://github.com/douglascrockford/JSON-js
+
+# UI脚本
+## Toolbox.jsx
+个人工具箱
+
+## LayerSaver.jsx
 图层存储，目前支持：形状层、文本层
 
-**导入图层**: 选择json文件导入
+>依赖模块：json2.jsx
 
-**导出图层**: 导出为json文件，默认导出路径为 `C:\Users\用户名\Documents\LayerSaver\layers`
 
-> 如果默认路径不存在，则新建文件夹
->
-> 每个图层对应一个json文件。如果图层名重复，会提示是否覆盖
+# 普通脚本
