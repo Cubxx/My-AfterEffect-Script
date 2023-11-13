@@ -548,7 +548,7 @@
                 return alert('更新失败: 只支持Windows系统')
             }
             const filePath = p.download();
-            system.callSystem('cmd /c powershell -Command "echo ' + config.name + '检查更新; Invoke-WebRequest -Uri ' + config.updata_url + ' -OutFile ' + filePath + '"');
+            system.callSystem('cmd /c powershell -Command "echo ' + config.name + '检查更新; iwr -Uri ' + config.updata_url + ' -OutFile ' + filePath + '"');
             const file = new File(filePath);
             if (!file.exists) {
                 return alert('更新失败: 无法下载新脚本');
