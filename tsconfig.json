@@ -13,6 +13,6 @@
     // file
     "jsx": "preserve",
     // "removeComments": true,
-    "sourceMap": true,
+    // "sourceMap": true,
   },
 }

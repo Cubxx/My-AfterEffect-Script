@@ -649,10 +649,10 @@ const a = {
         ) {
             return _.assign(u.iconbutton(node, icon), {
                 preferredSize: [30, 30],
-                onClick: fn && b.set_undo_group(fn),
+                onClick: fn && (() => _.setUndoGroup('', fn)),
             });
         }
-        const win = _.assign(u.palette(that), { spacing: -10 });
+        const win = _.assign(u.palette(this), { spacing: -10 });
         btn(win, File.decode(config.icons.import), a.import);
         btn(win, File.decode(config.icons.export), a.export);
         btn(win, File.decode(config.icons.setting)).onClick = function () {
